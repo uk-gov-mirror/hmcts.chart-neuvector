@@ -19,7 +19,7 @@ rules:
 groups: []
 
 config:
-  sleep: 240
+  sleep: 180
   forceLicenseUpdate: false
 
 neuvector:
