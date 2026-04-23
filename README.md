@@ -1,4 +1,6 @@
+
 # chart-neuvector
+
 
 Helm Chart for NeuVector
 
@@ -172,7 +174,103 @@ spec:
 
 `httpredirect` now defaults to `false`, so the chart renders cleanly when the setting is omitted.
 
+
 ## Releases
 
 We use semantic versioning via GitHub releases to handle new releases of this application chart, this is done via automation called Release Drafter. When you merge a PR to master, a new draft release will be created.
 More information is available about the [release process and how to create draft releases for testing purposes in more depth](https://hmcts.github.io/ops-runbooks/Testing-Changes/drafting-a-release.html)
+
+---
+
+## Examples
+
+Below are examples of how to use the chart inputs to add each available NeuVector resource type for a generic namespace (e.g., `my-namespace`).
+
+### 1. Network Rule Example
+
+```yaml
+rules:
+  network:
+    includeDefaultRules: true
+    rules:
+      - apiVersion: neuvector.com/v1
+        kind: NvClusterSecurityRule
+        metadata:
+          name: my-namespace-egress
+        spec:
+          egress:
+            - action: allow
+              applications: [SSL]
+              name: AllowExternal443
+              ports: tcp/443
+              selector:
+                criteria:
+                  - key: address
+                    op: =
+                    value: example.com
+          ingress: []
+          file: []
+          process: []
+          target:
+            policymode: Protect
+            selector:
+              criteria:
+                - key: namespace
+                  op: =
+                  value: my-namespace
+              name: MyNamespacePods
+          waf:
+            settings: []
+            status: true
+```
+
+### 2. Admission Control Rule Example
+
+```yaml
+rules:
+  admission:
+    enable: true
+    includeDefaultRules: true
+    rules:
+      - action: deny
+        criteria:
+          - name: namespace
+            op: =
+            value: my-namespace
+        comment: "Deny all admissions in my-namespace"
+```
+
+### 3. Response Policy Example
+
+```yaml
+rules:
+  response:
+    policies:
+      - name: block-priv-escalation
+        event: security-event
+        conditions:
+          - type: name
+            value: Container.Privilege.Escalation
+        actions:
+          - quarantine
+        disable: false
+      - name: notify-on-deny
+        event: admission-control
+        conditions:
+          - type: name
+            value: Admission.Control.Denied
+        actions:
+          - webhook
+        disable: false
+```
+
+### 4. Group Example
+
+```yaml
+groups:
+  - name: my-namespace-group
+    criteria:
+      - key: namespace
+        op: =
+        value: my-namespace
+```
