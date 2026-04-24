@@ -1,13 +1,7 @@
 {{- if .Values.rules.admission.enable }}
-{{- $includeDefaultRules := true -}}
-{{- if hasKey .Values.rules.admission "includeDefaultRules" -}}
-{{- $includeDefaultRules = .Values.rules.admission.includeDefaultRules -}}
-{{- end -}}
-{{- $defaultRules := list -}}
-{{- if $includeDefaultRules -}}
-{{- $defaultRules = (.Values.rules.admission.defaultRules | default (list)) -}}
-{{- end -}}
-{{- $rules := concat (.Values.rules.admission.rules | default (list)) $defaultRules -}}
+{{- $customRules := .Values.rules.admission.customRules | default (list) -}}
+{{- $defaultRules := .Values.rules.admission.defaultRules | default (list) -}}
+{{- $rules := concat $customRules $defaultRules -}}
 apiVersion: neuvector.com/v1
 kind: NvAdmissionControlSecurityRule
 metadata:

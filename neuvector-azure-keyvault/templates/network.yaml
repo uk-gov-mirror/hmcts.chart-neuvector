@@ -1,13 +1,7 @@
 {{- $groups := .Values.groups | default (list) -}}
-{{- $includeDefaultRules := true -}}
-{{- if hasKey .Values.rules.network "includeDefaultRules" -}}
-{{- $includeDefaultRules = .Values.rules.network.includeDefaultRules -}}
-{{- end -}}
-{{- $defaultRules := list -}}
-{{- if $includeDefaultRules -}}
-{{- $defaultRules = (.Values.rules.network.defaultRules | default (list)) -}}
-{{- end -}}
-{{- $items := concat $groups (concat (.Values.rules.network.rules | default (list)) $defaultRules) -}}
+{{- $customRules := .Values.rules.network.customRules | default (list) -}}
+{{- $defaultRules := .Values.rules.network.defaultRules | default (list) -}}
+{{- $items := concat $groups (concat $customRules $defaultRules) -}}
 {{- if $items }}
 apiVersion: v1
 items:
