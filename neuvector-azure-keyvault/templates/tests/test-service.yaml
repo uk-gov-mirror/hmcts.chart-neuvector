@@ -21,7 +21,7 @@ spec:
         - name: {{ .Release.Name }}-test-service
           image: hmctsprod.azurecr.io/docker-curl
           volumeMounts:
-          {{- ( include "hmcts.secretMounts.v3" . ) | indent 10   }}
+          {{- ( include "hmcts.secretMounts.v4" . ) | indent 10   }}
             - name: config-volume
               mountPath: /entrypoint
           env:
@@ -29,7 +29,7 @@ spec:
               value: {{ .Release.Name }}
           command: ["sh", "-c", "/entrypoint/entrypoint.sh"]
       volumes:
-      {{- ( include "hmcts.secretCSIVolumes.v3" . ) | indent 6 }}
+      {{- ( include "hmcts.secretCSIVolumes.v4" . ) | indent 6 }}
         - name: config-volume
           configMap:
             name: {{ .Release.Name }}-test-configmap
